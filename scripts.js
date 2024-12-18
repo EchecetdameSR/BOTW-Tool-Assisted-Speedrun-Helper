@@ -114,7 +114,7 @@ const translations = {
         });
 
         async function fetchGitHubFiles() {
-            const githubURL = "https://api.github.com/repos/echecetdamesr/TAS-Editor-Convert/contents/programmes";
+            const githubURL = "https://api.github.com/repos/echecetdamesr/BOTW-Tool-Assisted-Speedrun-Helper/contents/programmes";
 
             try {
                 const response = await fetch(githubURL);
@@ -173,7 +173,7 @@ const translations = {
 
                 const downloadCell = document.createElement('td');
                 const downloadButton = document.createElement('a');
-                const rawUrl = `https://raw.githubusercontent.com/echecetdamesr/TAS-Editor-Convert/main/programmes/${file.name}`;
+                const rawUrl = `https://raw.githubusercontent.com/echecetdamesr/BOTW-Tool-Assisted-Speedrun-Helper/main/programmes/${file.name}`;
                 downloadButton.href = rawUrl;
                 downloadButton.target = '_blank';
                 downloadButton.textContent = 'Télécharger';
