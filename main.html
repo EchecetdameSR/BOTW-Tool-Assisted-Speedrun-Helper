@@ -115,6 +115,20 @@
             color: #666;
             text-align: center;
         }
+
+        /* Ajout de styles pour le champ de nom de fichier */
+        .file-name-input {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .file-name-input input {
+            font-size: 1rem;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            width: 250px;
+        }
     </style>
 </head>
 
@@ -122,7 +136,16 @@
     <h1>Convertisseur - TAS Editor</h1>
     <label for="fileInput" class="file-upload-label">Choisir un fichier</label>
     <input type="file" id="fileInput" accept=".txt">
+
+    <!-- Champ pour entrer un nom personnalisé pour le fichier -->
+    <div class="file-name-input">
+        <label for="fileNameInput">Nom du fichier :</label>
+        <input type="text" id="fileNameInput" value="script0-1">
+    </div>
+
     <div id="fileInfo" class="file-info" style="display: none;">Aucun fichier sélectionné.</div>
+    <div id="lineCount" class="file-info" style="display: none;"></div> <!-- Nombre de lignes -->
+    
     <button id="processButton">Traiter le fichier</button>
     <div class="progress-bar" id="progressBar">
         <div class="progress-bar-inner" id="progressBarInner">0%</div>
@@ -136,10 +159,12 @@
     <script>
         const fileInput = document.getElementById('fileInput');
         const fileInfo = document.getElementById('fileInfo');
+        const lineCount = document.getElementById('lineCount'); // Nombre de lignes
         const processButton = document.getElementById('processButton');
         const progressBar = document.getElementById('progressBar');
         const progressBarInner = document.getElementById('progressBarInner');
         const downloadLink = document.getElementById('downloadLink');
+        const fileNameInput = document.getElementById('fileNameInput'); // Champ pour nom du fichier
 
         // Afficher le nom du fichier sélectionné et son poids
         fileInput.addEventListener('change', () => {
@@ -148,9 +173,20 @@
                 const fileSize = (file.size / 1024).toFixed(2); // Taille du fichier en Ko
                 fileInfo.textContent = `Fichier sélectionné : ${file.name} (${fileSize} Ko)`;
                 fileInfo.style.display = 'block';
+
+                // Lire le fichier pour compter les lignes
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    const content = event.target.result;
+                    const lines = content.split('\n').length; // Compter les lignes
+                    lineCount.textContent = `Nombre de lignes : ${lines}`;
+                    lineCount.style.display = 'block';
+                };
+                reader.readAsText(file);
             } else {
                 fileInfo.textContent = 'Aucun fichier sélectionné.';
                 fileInfo.style.display = 'none';
+                lineCount.style.display = 'none'; // Masquer le nombre de lignes si aucun fichier
             }
         });
 
@@ -177,12 +213,15 @@
                 // Supprimer KEY_SL et KEY_SR
                 const cleanedContent = content.replace(/KEY_SL;?/g, '').replace(/KEY_SR;?/g, '');
 
+                // Récupérer le nom du fichier personnalisé, ou par défaut
+                const fileName = fileNameInput.value.trim() || 'script0-1';
+
                 // Créer un fichier téléchargeable
                 const blob = new Blob([cleanedContent], { type: 'text/plain' });
                 const url = URL.createObjectURL(blob);
 
                 downloadLink.href = url;
-                downloadLink.download = 'script0-1.txt';
+                downloadLink.download = `${fileName}.txt`; // Utiliser le nom personnalisé
                 downloadLink.textContent = 'Télécharger le fichier nettoyé';
                 downloadLink.style.display = 'inline';
 
