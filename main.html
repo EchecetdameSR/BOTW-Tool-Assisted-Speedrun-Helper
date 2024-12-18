@@ -5,8 +5,280 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BOTW TAS Helper</title>
+    <!-- Police Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-image: url('https://pbs.twimg.com/media/Ddkr-pcU0AAqMIl.jpg:large'); /* Remplace cette URL par le lien de l'image de fond */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative; /* Nécessaire pour positionner l'élément de superposition */
+        }
+
+        /* Ajout d'une superposition sombre */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Ombre noire avec opacité de 60% */
+            z-index: -1; /* Met l'overlay derrière le contenu de la page */
+        }
+
+        /* Titre principal imposant */
+        h1 {
+            color: #ffffff; /* Texte en blanc pour plus de contraste */
+            font-size: 4.5rem; /* Augmenter la taille du texte */
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 4px; /* Espacement des lettres pour un effet plus aéré */
+            text-shadow: 4px 4px 15px rgba(0, 0, 0, 0.6); /* Ombre plus nette pour un meilleur contraste */
+            margin-top: 50px; /* Un peu plus d'espace en haut */
+            background-color: rgba(0, 0, 0, 0.4); /* Fond noir semi-transparent */
+            padding: 15px 40px; /* Plus d'espace autour du titre */
+            border-radius: 12px; /* Coins arrondis pour un effet plus doux */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Ombre plus marquée */
+            transition: transform 0.3s ease-in-out; /* Animation au survol */
+        }
+
+        h1:hover {
+            transform: translateY(-5px); /* Effet de survol, soulèvement du titre */
+        }
+
+        /* Nouveau style pour le bouton de langue */
+        #langButton {
+            position: absolute; /* Position absolue à l'intérieur du conteneur */
+            top: 20px; /* À 20px du haut de .main-container */
+            left: 20px; /* À 20px du bord gauche de .main-container */
+            background-color: #1e90ff; /* Couleur bleue */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: none;
+            z-index: 10; /* Il doit être au-dessus des autres éléments dans .main-container */
+        }
+
+        #langButton:hover {
+            background-color: #4682b4; /* Couleur bleue plus foncée au survol */
+            transform: translateY(-3px); /* Effet de soulèvement au survol */
+        }
+
+        #fileNameLabel {
+    color: white;
+}
+
+#fileInfo,
+#lineCount {
+    color: white; /* Texte en blanc */
+}
+
+.yellow-text {
+    color: yellow; /* Applique la couleur jaune aux chiffres et aux unités Ko */
+}
+
+        /* Conteneur principal */
+        .main-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 100px; /* Espace pour ne pas être caché par le bouton */
+            border-radius: 15px;
+            padding: 45px;
+            background-color: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }   
+
+        /* Style du titre des sections secondaires */
+        h2 {
+            color: #ffffff;
+            font-size: 2.4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: capitalize;
+            letter-spacing: 1.2px;
+            transition: color 0.3s ease;
+        }
+
+        h2:hover {
+            color: #ffcc00;
+        }
+
+        /* Style du conteneur du convertisseur */
+        .convert-container {
+            text-align: center;
+            padding: 35px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        /* Style du bouton "Traiter" */
+        #processButton {
+            background-color: #ffb74a;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border: none;
+            font-size: 1.1rem;
+            margin-top: 20px;
+        }
+
+        #processButton:hover {
+            background-color: #ff9800;
+            transform: translateY(-3px);
+        }
+
+        /* Style des boutons */
+        .download-button {
+            background-color: #58a6b8;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 20px;
+            display: inline-block;
+        }
+
+        .download-button:hover {
+            background-color: #3e7a7a;
+            transform: translateY(-3px);
+        }
+
+        /* Style du label pour choisir un fichier local */
+        .file-upload-label {
+            background-color: #ff7f50;
+            color: white;
+            font-size: 1rem;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-bottom: 20px;
+        }
+
+        .file-upload-label:hover {
+            background-color: #e06e4b;
+            transform: translateY(-3px);
+        }
+
+        /* Style de l'input du nom du fichier */
+        .file-name-input {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .file-name-input input {
+            font-size: 1rem;
+            padding: 12px 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            width: 280px;
+            transition: border-color 0.3s ease;
+        }
+
+        .file-name-input input:focus {
+            border-color: #58a6b8;
+        }
+
+        /* Style de la barre de progression */
+        .progress-bar {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-bar-inner {
+            height: 25px;
+            width: 0%;
+            background-color: #3dba8f;
+            text-align: center;
+            line-height: 25px;
+            color: white;
+            border-radius: 8px;
+            transition: width 0.5s ease;
+        }
+
+        /* Style du tableau avec cadre */
+        .table-container {
+            width: 85%;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            color: rgb(255, 255, 255);
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 12px;
+        }
+
+        th {
+            background-color: #58a6b8;
+            color: white;
+        }
+
+        td {
+            color: #ffffff;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #ffffff;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding: 12px 24px;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+    </style>
 </head>
 
 <body>
@@ -59,7 +331,8 @@
     </div>
 
     <footer>
-        By Echecetdame
+        Réalisé par Echecetdame
     </footer>
+
     <script src="scripts.js"></script>
 </html>
