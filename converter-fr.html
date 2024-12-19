@@ -1,0 +1,179 @@
+<!DOCTYPE html> 
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOTW Tool Assisted Speedrun Helper</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="converter.css">
+    <script>
+        function handleFileSelection(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const fileName = file.name;
+                const fileSize = (file.size / 1024).toFixed(2);
+                document.getElementById('file-name').textContent = fileName;
+
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const lines = e.target.result.split('\n');
+                    const lineCount = lines.length;
+                    document.getElementById('file-info').textContent = `${lineCount} lignes`;
+                    document.getElementById('file-lines').textContent = `${fileSize} KB`;
+
+                    const previewContainer = document.getElementById('uploaded-preview').querySelector('p');
+                    previewContainer.innerHTML = "";
+
+                    lines.forEach((line, index) => {
+                        const lineElement = document.createElement('div');
+                        const lineNumber = document.createElement('span');
+                        lineNumber.className = 'line-number';
+                        lineNumber.textContent = `${index + 1}: `;
+
+                        const lineContent = document.createElement('span');
+                        lineContent.className = 'line-content';
+                        lineContent.innerHTML = line
+                            .replace(/KEY_SR/g, '<span style="color: red;">KEY_SR</span>')
+                            .replace(/KEY_SL/g, '<span style="color: red;">KEY_SL</span>');
+
+                        lineElement.appendChild(lineNumber);
+                        lineElement.appendChild(lineContent);
+
+                        previewContainer.appendChild(lineElement);
+                    });
+
+                    const timeInSeconds = lineCount * 0.033;
+                    const minutes = Math.floor(timeInSeconds / 60);
+                    const seconds = Math.floor(timeInSeconds % 60);
+                    const milliseconds = Math.floor((timeInSeconds % 1) * 1000);
+
+                    document.getElementById('script-time').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function convertAndDownload() {
+            const fileInput = document.getElementById('file-input');
+            const fileNameInput = document.getElementById('modified-file-name').value || "cleaned_file.txt";
+            const file = fileInput.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                const progressBar = document.getElementById('progress-bar-inner');
+
+                reader.onload = function (e) {
+                    const lines = e.target.result.split('\n');
+                    const cleanedContent = lines
+                        .map(line => line.replace(/KEY_SL|KEY_SR/g, '').trim())
+                        .join('\n');
+
+                    const previewContainer = document.getElementById('clean-preview').querySelector('p');
+                    previewContainer.innerHTML = "";
+
+                    cleanedContent.split('\n').forEach((line, index) => {
+                        const lineElement = document.createElement('div');
+                        const lineNumber = document.createElement('span');
+                        lineNumber.className = 'line-number';
+                        lineNumber.textContent = `${index + 1}: `;
+
+                        const lineContent = document.createElement('span');
+                        lineContent.className = 'line-content';
+                        lineContent.textContent = line;
+
+                        lineElement.appendChild(lineNumber);
+                        lineElement.appendChild(lineContent);
+
+                        previewContainer.appendChild(lineElement);
+                    });
+
+                    const blob = new Blob([cleanedContent], { type: 'text/plain' });
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(blob);
+                    downloadLink.download = fileNameInput;
+
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                        progress += 10;
+                        progressBar.style.width = `${progress}%`;
+                        if (progress >= 100) {
+                            clearInterval(interval);
+                            setTimeout(() => {
+                                progressBar.style.width = '0%';
+                                downloadLink.click();
+                            }, 500);
+                        }
+                    }, 100);
+                };
+
+                reader.readAsText(file);
+            } else {
+                alert("Veuillez sélectionner un fichier d'abord !");
+            }
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>BOTW Tool Assisted Speedrun Helper</h1>
+            <p style="
+                font-size: 0.85em; 
+                color: #a0aec0; 
+                font-style: italic; 
+                margin: 5px 0 0; 
+                text-align: left;
+                letter-spacing: 0.5px;
+            ">
+                By Echecetdame
+            </p>
+        </div>
+        <nav>
+            <a href="main-fr.html">Accueil</a>
+            <a href="#">Scripts</a>
+            <a href="converter-fr.html">Convertisseur - TAS Editor</a>
+            <a href="#">Enregistrement d'Inputs (Beta)</a>
+            <button id="flag-button" class="flag-button">
+                <img class="flag-image" src="https://upload.wikimedia.org/wikipedia/en/a/ae/Flag_of_the_United_Kingdom.svg" alt="British Flag" onclick="location.href='converter-en.html'">
+            </button>
+        </nav>
+    </header>
+    <main>
+        <div class="left-section">
+            <label for="file-input" style="cursor: pointer; background-color: #4a5568; color: #fff; padding: 10px 15px; border-radius: 5px; text-align: center; display: inline-block;">Choisir un fichier :</label>
+            <input type="file" id="file-input" style="display: none;" onchange="handleFileSelection(event)">
+
+            <div>Nom du fichier : <span id="file-name">Aucun fichier sélectionné</span></div>
+            <div>Nombre de lignes : <span id="file-info">N/A</span></div>
+            <div>Taille du fichier : <span id="file-lines">N/A</span></div>
+
+            <div>Temps du script : <span id="script-time">00:00.000</span></div>
+
+            <div>Nom du fichier modifié : 
+                <input type="text" id="modified-file-name" value="script0-1.txt">
+            </div>
+
+            <div class="progress-bar">
+                <div id="progress-bar-inner" class="progress-bar-inner"></div>
+            </div>
+
+            <button id="convert-button" onclick="convertAndDownload()">Convertir</button>
+        </div>
+        <div class="right-section">
+            <div class="file-preview" id="uploaded-preview">
+                <h3>Aperçu fichier upload</h3>
+                <p></p>
+            </div>
+
+            <div class="file-preview" id="clean-preview">
+                <h3>Aperçu fichier clean</h3>
+                <p>Contenu affiché ici...</p>
+            </div>
+        </div>
+        <video id="tuto-video" autoplay loop muted>
+    <source src="convtuto.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+    </main>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOTW Tool Assisted Speedrun Helper</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="converter.css">
+    <script>
+        // Copie inchangée du script
+        // ...
+    </script>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>BOTW Tool Assisted Speedrun Helper</h1>
+            <p style="
+                font-size: 0.85em; 
+                color: #a0aec0; 
+                font-style: italic; 
+                margin: 5px 0 0; 
+                text-align: left;
+                letter-spacing: 0.5px;
+            ">
+                By Echecetdame
+            </p>
+        </div>
+        <nav>
+            <a href="main-en.html">Home</a>
+            <a href="#">Scripts</a>
+            <a href="converter-en.html">Converter - TAS Editor</a>
+            <a href="#">Input Recording (Beta)</a>
+            <button id="flag-button" class="flag-button">
+                <img class="flag-image" src="https://upload.wikimedia.org/wikipedia/en/c/c3/Flag_of_France.svg" alt="French Flag" onclick="location.href='converter-fr.html'">
+            </button>
+        </nav>
+    </header>
+    <main>
+        <div class="left-section">
+            <label for="file-input" style="cursor: pointer; background-color: #4a5568; color: #fff; padding: 10px 15px; border-radius: 5px; text-align: center; display: inline-block;">Choose a file:</label>
+            <input type="file" id="file-input" style="display: none;" onchange="handleFileSelection(event)">
+
+            <div>File name: <span id="file-name">No file selected</span></div>
+            <div>Number of lines: <span id="file-info">N/A</span></div>
+            <div>File size: <span id="file-lines">N/A</span></div>
+
+            <div>Script time: <span id="script-time">00:00.000</span></div>
+
+            <div>Modified file name: 
+                <input type="text" id="modified-file-name" value="script0-1.txt">
+            </div>
+
+            <div class="progress-bar">
+                <div id="progress-bar-inner" class="progress-bar-inner"></div>
+            </div>
+
+            <button id="convert-button" onclick="convertAndDownload()">Convert</button>
+        </div>
+        <div class="right-section">
+            <div class="file-preview" id="uploaded-preview">
+                <h3>Uploaded File Preview</h3>
+                <p></p>
+            </div>
+
+            <div class="file-preview" id="clean-preview">
+                <h3>Cleaned File Preview</h3>
+                <p>Content displayed here...</p>
+            </div>
+        </div>
+        <video id="tuto-video" autoplay loop muted>
+            <source src="convtuto.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </main>
+</body>
+</html>
